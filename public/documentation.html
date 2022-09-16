@@ -4,9 +4,101 @@
             <meta charset="utf-8">
             <meta name="viewport" content="width=device-width, initial-scale=1">
             <title>Documentation</title>
+            <link rel="stylesheet" type="text/css" href="styles.css"/>
         </head>
         <body>
-            <h1>Documentation Page</h1>
-            <p>This is my documentation page</p>
+
+            <div class="document-title">
+                <h1>Documentation Page</h1>
+                <p>This is my documentation page</p>
+            </div>
+
+        
+        <hr>
+
+        <br>
+        <br>
+
+            <div>
+                <table>
+                    <thead>
+                       <tr>
+                            <th>Business Logic</th>
+                            <th>URL</th>
+                            <th>HTTP METHOD</th>
+                            <th>Request Body Data Format</th>
+                            <th>Respone Body Data Format</th>
+                       </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Return a list of all the movies</td>
+                            <td>"/movies"</td>
+                            <td>GET</td>
+                            <td>None</td>
+                            <td>JSON object with list of movies</td>
+                        </tr>
+                        <tr>
+                            <td>Return data about a specific movie with its title</td>
+                            <td>"/movies/:title"</td>
+                            <td>GET</td>
+                            <td>None</td>
+                            <td>JSON object with information of single movie</td>
+                        </tr>
+                        <tr>
+                            <td>Return data about a genre by a movie name</td>
+                            <td>"/movies/genre/:genreName"</td>
+                            <td>GET</td>
+                            <td>None</td>
+                            <td>JSON object with genre of a movie title</td>
+                        </tr>
+                        <tr>
+                            <td>Return data about a director</td>
+                            <td>"/movies/directors/:directorName"</td>
+                            <td>GET</td>
+                            <td>None</td>
+                            <td>JSON object with data about a director</td>
+                        </tr>
+                        <tr>
+                            <td>Allow new users to register</td>
+                            <td>"/users"</td>
+                            <td>POST</td>
+                            <td>JSON object format</td>
+                            <td>Created acknowledgement with status coded - 201</td>
+                        </tr>
+                        <tr>
+                            <td>Allow users to update their username</td>
+                            <td>"/users/:id"</td>
+                            <td>PUT</td>
+                            <td>None</td>
+                            <td>Created acknowledgement with status coded - 200</td>
+                        </tr>
+                        <tr>
+                            <td>Allow users to add a movie to their favorite lists</td>
+                            <td>"/users/:id/:movieTitle"</td>
+                            <td>POST</td>
+                            <td>None</td>
+                            <td>Send confirmation message saying movie has been added to users favorites list</td>
+                        </tr>
+                        <tr>
+                            <td>Allow users to remove a movie from their favorites lists</td>
+                            <td>"/users/:id/:movieTitle</td>
+                            <td>DELETE</td>
+                            <td>None</td>
+                            <td>Send confirmation message saying movie has been removed from users favorites list</td>
+                        </tr>
+                        <tr>
+                            <td>Allow existing users to deregister</td>
+                            <td>"users/:id"</td>
+                            <td>DELETE</td>
+                            <td>None</td>
+                            <td>Send confirmation message saying user email has been removed</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+
+
         </body>
     </html>
