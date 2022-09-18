@@ -63,12 +63,17 @@
                             <td>Allow new users to register</td>
                             <td>"/users"</td>
                             <td>POST</td>
-                            <td>JSON object format</td>
+                            <td>JSON object format <br>
+                                { 
+                                    "name": "",
+                                    "favoriteMovie": "" 
+                                }
+                            </td>
                             <td>Created acknowledgement with status coded - 201</td>
                         </tr>
                         <tr>
                             <td>Allow users to update their username</td>
-                            <td>"/users/:id"</td>
+                            <td>"/users/:username"</td>
                             <td>PUT</td>
                             <td>None</td>
                             <td>Created acknowledgement with status coded - 200</td>
