@@ -1,187 +1,23 @@
 const express = require('express'),
-morgan = require('morgan'),
 bodyParser = require('body-parser'),
 uuid = require('uuid');
 
+const morgan = require('morgan');
 const app = express();
+const mongoose = require('mongoose');
+const Models = require('./model.js');
+
+const Movie = Models.Movie;
+const User = Models.User;
 
 
 
-// let horrorMovies = [
-//     {'title': 'The Ring', 
-//         'genre': {
-//             'name': 'horror',
-//             'description' : []
-//         }
-//     },
-//     {Title: 'A Nightmare on Elm Street'},
-//     {Title: 'Halloween'},
-//     {Title: 'Saw'},
-//     {Title: 'The Exorcist'},
-//     {Title: 'The Grudge'},
-//     {Title: 'Insidious'},
-//     {Title: 'Jeepers Creepers'},
-//     {Title: 'The Haunting in Connecticut'},
-//     {Title: 'The Conjuring'}
-// ]
+mongoose.connect('mongodb://localhost:27017/movies',
+{ useNewUrlParser: true, useUnifiedTopology: true });
 
+app.use(bodyParser.urlencoded({ extended: true }));
 
-let users = [
-    {
-        id: 123,
-        name: 'user1 name',
-        favoriteMovies:  ['movie1', 'movie2']
-    },
-    {
-        id: 456,
-        name: 'user1 name',
-        favoriteMovies:  ['movie1', 'movie2']
-    }
-]
-
-const horrorMovies = [
-    {
-    'Title': 'The Ring',
-    'Description': 'My movie description',
-    'Director': {
-        'Name': 'Gore Verbinski',
-        'Bio': '.......',
-        'Birth': '3/16/1964'
-    },
-    'Genre': {
-        'Name': 'Horror',
-        'Description': ''
-    },
-    'ImageUrl': ''
-},
-{
-    'Title': 'A Nightmare on Elm Street',
-    'Description': 'My movie description',
-    'Director': {
-        'Name': '',
-        'Bio': '',
-        'Birth': ''
-    },
-    'Genre': {
-        'Name': '',
-        'Description': ''
-    },
-    'ImageUrl': ''
-},
-{
-    'Title': 'Halloween',
-    'Description': 'My movie description',
-    'Director': {
-        'Name': '',
-        'Bio': '',
-        'Birth': ''
-    },
-    'Genre': {
-        'Name': '',
-        'Description': ''
-    },
-    'ImageUrl': ''
-},
-{
-    'Title': 'Saw',
-    'Description': 'My movie description',
-    'Director': {
-        'Name': '',
-        'Bio': '',
-        'Birth': ''
-    },
-    'Genre': {
-        'Name': '',
-        'Description': ''
-    },
-    'ImageUrl': ''
-},
-{
-    'Title': 'The Exorcist',
-    'Description': 'My movie description',
-    'Director': {
-        'Name': '',
-        'Bio': '',
-        'Birth': ''
-    },
-    'Genre': {
-        'Name': '',
-        'Description': ''
-    },
-    'ImageUrl': ''
-},
-{
-    'Title': 'The Grudge',
-    'Description': 'My movie description',
-    'Director': {
-        'Name': '',
-        'Bio': '',
-        'Birth': ''
-    },
-    'Genre': {
-        'Name': '',
-        'Description': ''
-    },
-    'ImageUrl': ''
-},
-{
-    'Title': 'Insidious',
-    'Description': 'My movie description',
-    'Director': {
-        'Name': '',
-        'Bio': '',
-        'Birth': ''
-    },
-    'Genre': {
-        'Name': '',
-        'Description': ''
-    },
-    'ImageUrl': ''
-},
-{
-    'Title': 'Jeepers Creepers',
-    'Description': 'My movie description',
-    'Director': {
-        'Name': '',
-        'Bio': '',
-        'Birth': ''
-    },
-    'Genre': {
-        'Name': '',
-        'Description': ''
-    },
-    'ImageUrl': ''
-},
-{
-    'Title': 'The Haunting in Connecticut',
-    'Description': 'My movie description',
-    'Director': {
-        'Name': '',
-        'Bio': '',
-        'Birth': ''
-    },
-    'Genre': {
-        'Name': '',
-        'Description': ''
-    },
-    'ImageUrl': ''
-},
-{
-    'Title': 'The Conjuring',
-    'Description': 'My movie description',
-    'Director': {
-        'Name': '',
-        'Bio': '',
-        'Birth': ''
-    },
-    'Genre': {
-        'Name': '',
-        'Description': ''
-    },
-    'ImageUrl': ''
-}
-]
-
+app.use(bodyParser.json());
 
 // Shows 'documentation.html' file inside 'public' folder
 app.use(express.static('public'));
@@ -189,9 +25,6 @@ app.use(express.static('public'));
 
 // Logs date/time/method/path/status-code
 app.use(morgan('common'));
-
-
-app.use(bodyParser.json());
 
 
 
@@ -203,113 +36,185 @@ app.get('/', (req, res) => {
 })
 
 
-// Get list of all movies in JSON format
-app.get('/movies',(req, res) => {
-    res.status(200).json(horrorMovies);
-})
-
-
-// Get data of a movie by its title
-app.get('/movies/:title', (req, res) => {
-    const { title } = req.params;
-    const movie = horrorMovies.find( movie => movie.Title === title);
-
-    if(movie){
-        res.status(200).json(movie);
-    } else {
-        res.status(400).send('No such movie');
-    }
-})
-// Get genre by movie name
-app.get('/movies/movie/:movieName', (req, res) => {
-    const { movieName } = req.params;
-    const genre = horrorMovies.find( movie => movie.Title === movieName ).Genre;
-
-    if(genre){
-        res.status(200).json(genre);
-    } else {
-        res.status(400).send('No such genre');
-    }
+// Get list of all movies in JSON format 
+app.get('/movies', (req, res) => {
+    Movie.find()
+    .then((movie) =>{
+        res.status(201).json(movie);
+    }).catch((error)=>{
+        console.error(error);
+        res.status(500).send('Error: ' + error);
+    })
 })
 
 
 
+// Get data of a movie by its title 
+app.get('/movies/:Title', (req, res) => {
+    Movie.findOne({ Title: req.params.Title })
+    .then((movie) =>{
+        res.status(201).json(movie);
+    }).catch((error) =>{
+        console.error(error);
+        res.status(500).send('Error: ' + error);
+    });
+});
 
-// Get name of director
-app.get('/movies/directors/:directorName', (req, res) => {
-    const { directorName } = req.params;
-    const director = horrorMovies.find( movie => movie.Director.Name === directorName ).Director;
 
-    if(director){
-        res.status(200).json(director);
-    } else {
-        res.status(400).send('No such director');
-    }
 
+// Get genre description by genre name
+app.get('/movies/genres/:Name', (req, res) => {
+    Movie.findOne({ 'Genre.Name' : req.params.Name })
+    .then((genre) => {
+        res.json(genre.Description);
+    }).catch((error)=>{
+        console.error(error);
+        res.status(500).send('Error: ' + error);
+    })
 })
 
 
-// Create new users
-app.post("/users", (req, res) => {
-    const newUsers = req.body;
 
-    if(newUsers.name){
-        newUsers.id = uuid.v4();
-        users.push(newUsers);
-        res.status(201).json(newUsers);
-    } else {
-        res.status(400).send('user need names');
-    }
-
+// Get data of director by name
+app.get('/movies/directors/:Name', (req, res) => {
+    Movie.findOne({ 'Director.Name' : req.params.Name })
+    .then((movie) => {
+        res.json(movie);
+    }).catch((error)=>{
+        console.error(error);
+        res.status(500).send('Error: ' + error);
+    })
 })
+
+
+
+ //Get list of all user
+app.get('/users', (req, res) =>{
+    User.find()
+    .then((users)=>{
+        res.status(201).json(users);
+    }).catch((error)=>{
+        console.error(error);
+        res.status(500).send('Error: ' + error);
+    });
+});
+
+
+//Get user by username
+app.get('/users/:Username', (req, res) => {
+        User.findOne({ Username: req.params.Username })
+          .then((user) => {
+            res.json(user);
+          })
+          .catch((err) => {
+            console.error(err);
+            res.status(500).send('Error: ' + err);
+          });
+});
+
+
+//Create new user
+app.post('/users', (req, res) => {
+    User.findOne({ Username: req.body.Username })
+      .then((user) => {
+        if (user) {
+          return res.status(400).send(req.body.Username + 'already exists');
+        } else {
+          User
+            .create({
+              Username: req.body.Username,
+              Password: req.body.Password,
+              Email: req.body.Email,
+              Birthday: req.body.Birthday
+            })
+            .then((user) =>{res.status(201).json(user) })
+          .catch((error) => {
+            console.error(error);
+            res.status(500).send('Error: ' + error);
+          })
+        }
+      })
+      .catch((error) => {
+        console.error(error);
+        res.status(500).send('Error: ' + error);
+      });
+});
+
+
 
 // Update users info
-app.put("/users/:username", (req, res) => {
-    let responseText = 'Allow user to update their info';
-    res.send(responseText);
-})
+app.put('/users/:Username', (req, res) => {
+    User.findOneAndUpdate({ Username: req.params.Username }, { $set:
+      {
+        Username: req.body.Username,
+        Password: req.body.Password,
+        Email: req.body.Email,
+        Birthday: req.body.Birthday
+      }
+    },
+    { new: true }, // This line makes sure that the updated document is returned
+    (err, updatedUser) => {
+      if(err) {
+        console.error(err);
+        res.status(500).send('Error: ' + err);
+      } else {
+        res.json(updatedUser);
+      }
+    });
+});
+
+
 
 // Create favorits list of movies for users
-app.post("/users/:id/:movieTitle", (req, res) => {
-    let responseText = 'Allow user to add movies to their favorits collection';
-    res.send(responseText);
-})
+app.post('/users/:Username/movies/:MovieID', (req, res) => {
+    User.findOneAndUpdate({ Username: req.params.Username }, {
+       $push: { FavoriteMovies: req.params.MovieID }
+     },
+     { new: true }, // This line makes sure that the updated document is returned
+    (err, updatedUser) => {
+      if (err) {
+        console.error(err);
+        res.status(500).send('Error: ' + err);
+      } else {
+        res.json(updatedUser);
+      }
+    });
+});
+
+
 
 // Remove movies from favorits list for users
-app.delete("/users/:id/:movieTitle", (req, res) => {
-    let responseText = 'Allow user to remove movies from their favorits collection';
-    res.send(responseText);
-})
-
-// Delete exisiting user accounts
-app.delete("/users/:id", (req, res) => {
-    let responseText = 'Allow users to delete their account';
-    res.send(responseText);
-})
-
-
-
-
-// Get movie name by its genre
-app.get('/movies/genre/:genreName', (req, res) => {
-    const { genreName } = req.params;
-    const name = horrorMovies.find( movie => movie.Genre.Name === genreName).Title;
-
-    if(name){
-        res.status(200).json(name);
-    } else {
-        res.status(400).send('No such name');
-    }
-})
+app.delete('/users/:Username/movies/:MovieID', (req, res) => {
+    User.findOneAndUpdate({ Username: req.params.Username }, {
+       $pull: { FavoriteMovies: req.params.MovieID }
+     },
+     { new: true }, // This line makes sure that the updated document is returned
+    (err, updatedUser) => {
+      if (err) {
+        console.error(err);
+        res.status(500).send('Error: ' + err);
+      } else {
+        res.json(updatedUser);
+      }
+    });
+});
 
 
-
-
-
-
-
-
-
+// Delete exisiting user accounts 
+app.delete('/users/:Username', (req, res) => {
+    User.findOneAndRemove({ Username: req.params.Username })
+      .then((user) => {
+        if (!user) {
+          res.status(400).send(req.params.Username + ' was not found');
+        } else {
+          res.status(200).send(req.params.Username + ' was deleted.');
+        }
+      })
+      .catch((err) => {
+        console.error(err);
+        res.status(500).send('Error: ' + err);
+      });
+});
 
 
 
