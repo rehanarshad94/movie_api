@@ -12,10 +12,19 @@ const User = Models.User;
 
 
 
+
 mongoose.connect('mongodb://localhost:27017/movies',
 { useNewUrlParser: true, useUnifiedTopology: true });
 
 app.use(bodyParser.urlencoded({ extended: true }));
+
+// Importing 'auth.js' folder & 'app' ensures EXPRESS is in 'auth.js' folder as well
+let auth = require('./auth')(app);
+
+// Importing 'passport' folder & 'passport' MODULE 
+const passport = require('passport');
+require('./passport');
+
 
 app.use(bodyParser.json());
 
@@ -37,7 +46,7 @@ app.get('/', (req, res) => {
 
 
 // Get list of all movies in JSON format 
-app.get('/movies', (req, res) => {
+app.get('/movies', passport.authenticate('jwt', {session: false}), (req, res) => {
     Movie.find()
     .then((movie) =>{
         res.status(201).json(movie);
