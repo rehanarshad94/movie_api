@@ -12,31 +12,38 @@ const User = Models.User;
 
 const { check, validationResult } = require('express-validator');
 
-const port = process.env.PORT || 8080;
 
 
+// Local
+// mongoose.connect('mongodb://localhost:27017/movies',
+// { useNewUrlParser: true, useUnifiedTopology: true });
 
+// Online
+mongoose.connect( process.env.connection, { useNewUrlParser: true, useUnifiedTopology: true });
 
-mongoose.connect('mongodb://localhost:27017/movies',
-{ useNewUrlParser: true, useUnifiedTopology: true });
 
 app.use(bodyParser.urlencoded({ extended: true }));
 
 
 
+// Allows access for all domains
 const cors = require('cors');
-let allowedOrigins = ['http://localhost:8080', 'http://testsite.com'];
+app.use(cors());
 
-app.use(cors({
-  origin: (origin, callback) => {
-    if(!origin) return callback(null, true);
-    if(allowedOrigins.indexOf(origin) === -1){ // If a specific origin isn’t found on the list of allowed origins
-      let message = 'The CORS policy for this application doesn’t allow access from origin ' + origin;
-      return callback(new Error(message ), false);
-    }
-    return callback(null, true);
-  }
-}));
+// Only allows selected domains to access the information 
+// const cors = require('cors');
+// let allowedOrigins = ['http://localhost:8080', 'http://testsite.com'];
+
+// app.use(cors({
+//   origin: (origin, callback) => {
+//     if(!origin) return callback(null, true);
+//     if(allowedOrigins.indexOf(origin) === -1){ // If a specific origin isn’t found on the list of allowed origins
+//       let message = 'The CORS policy for this application doesn’t allow access from origin ' + origin;
+//       return callback(new Error(message ), false);
+//     }
+//     return callback(null, true);
+//   }
+// }));
 
 
 
@@ -68,7 +75,7 @@ app.get('/', (req, res) => {
 
 
 // Get list of all movies in JSON format 
-app.get('/movies', passport.authenticate('jwt', {session: false}), (req, res) => {
+app.get('/movies', passport.authenticate('jwt', { session: false }), (req, res) => {
     Movie.find()
     .then((movie) =>{
         res.status(201).json(movie);
@@ -81,7 +88,7 @@ app.get('/movies', passport.authenticate('jwt', {session: false}), (req, res) =>
 
 
 // Get data of a movie by its title 
-app.get('/movies/:Title', (req, res) => {
+app.get('/movies/:Title', passport.authenticate('jwt', { session: false }), (req, res) => {
     Movie.findOne({ Title: req.params.Title })
     .then((movie) =>{
         res.status(201).json(movie);
@@ -94,7 +101,7 @@ app.get('/movies/:Title', (req, res) => {
 
 
 // Get genre description by genre name
-app.get('/movies/genres/:Name', (req, res) => {
+app.get('/movies/genres/:Name', passport.authenticate('jwt', { session: false }), (req, res) => {
     Movie.findOne({ 'Genre.Name' : req.params.Name })
     .then((genre) => {
         res.json(genre.Description);
@@ -107,7 +114,7 @@ app.get('/movies/genres/:Name', (req, res) => {
 
 
 // Get data of director by name
-app.get('/movies/directors/:Name', (req, res) => {
+app.get('/movies/directors/:Name', passport.authenticate('jwt', { session: false }), (req, res) => {
     Movie.findOne({ 'Director.Name' : req.params.Name })
     .then((movie) => {
         res.json(movie);
@@ -120,7 +127,7 @@ app.get('/movies/directors/:Name', (req, res) => {
 
 
  //Get list of all user
-app.get('/users', (req, res) =>{
+app.get('/users', passport.authenticate('jwt', { session: false }), (req, res) =>{
     User.find()
     .then((users)=>{
         res.status(201).json(users);
@@ -132,7 +139,7 @@ app.get('/users', (req, res) =>{
 
 
 //Get user by username
-app.get('/users/:Username', (req, res) => {
+app.get('/users/:Username', passport.authenticate('jwt', { session: false }), (req, res) => {
         User.findOne({ Username: req.params.Username })
           .then((user) => {
             res.json(user);
@@ -152,7 +159,7 @@ app.post('/users',
   //or use .isLength({min: 5}) which means
   //minimum value of 5 characters are only allowed
   [
-  check('Username', 'Username is required').isLength({min: 5}),
+    check('Username', 'Username is required').isLength({min: 5}),
     check('Username', 'Username contains non alphanumeric characters - not allowed.').isAlphanumeric(),
     check('Password', 'Password is required').not().isEmpty(),
     check('Email', 'Email does not appear to be valid').isEmail()
@@ -164,7 +171,7 @@ app.post('/users',
     if (!errors.isEmpty()) {
       return res.status(422).json({ errors: errors.array() });
     }
-  let hashedPassword = Users.hashPassword(req.body.Password);
+  let hashedPassword = User.hashPassword(req.body.Password);
     User.findOne({ Username: req.body.Username }) // Search to see if a user with the requested username already exists
       .then((user) => {
         if (user) {  //If the user is found, send a response that it already exists
@@ -193,7 +200,7 @@ app.post('/users',
 
 
 // Update users info
-app.put('/users/:Username', (req, res) => {
+app.put('/users/:Username', passport.authenticate('jwt', { session: false }), (req, res) => {
     User.findOneAndUpdate({ Username: req.params.Username }, { $set:
       {
         Username: req.body.Username,
@@ -216,7 +223,7 @@ app.put('/users/:Username', (req, res) => {
 
 
 // Create favorits list of movies for users
-app.post('/users/:Username/movies/:MovieID', (req, res) => {
+app.post('/users/:Username/movies/:MovieID', passport.authenticate('jwt', { session: false }), (req, res) => {
     User.findOneAndUpdate({ Username: req.params.Username }, {
        $push: { FavoriteMovies: req.params.MovieID }
      },
@@ -234,7 +241,7 @@ app.post('/users/:Username/movies/:MovieID', (req, res) => {
 
 
 // Remove movies from favorits list for users
-app.delete('/users/:Username/movies/:MovieID', (req, res) => {
+app.delete('/users/:Username/movies/:MovieID', passport.authenticate('jwt', { session: false }), (req, res) => {
     User.findOneAndUpdate({ Username: req.params.Username }, {
        $pull: { FavoriteMovies: req.params.MovieID }
      },
@@ -251,7 +258,7 @@ app.delete('/users/:Username/movies/:MovieID', (req, res) => {
 
 
 // Delete exisiting user accounts 
-app.delete('/users/:Username', (req, res) => {
+app.delete('/users/:Username', passport.authenticate('jwt', { session: false }), (req, res) => {
     User.findOneAndRemove({ Username: req.params.Username })
       .then((user) => {
         if (!user) {
@@ -275,6 +282,12 @@ app.use((err, req, res, next) => {
 
 
 
-app.listen(port, '0.0.0.0',() => {
+// app.listen(8080, () => {
+//   console.log('Server is running on Port 8080');
+// })
+
+
+const port = process.env.PORT || 8080;
+app.listen(port, '0.0.0.0', () => {
  console.log('Listening on Port ' + port);
 });
