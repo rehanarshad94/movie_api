@@ -19,7 +19,7 @@ const { check, validationResult } = require('express-validator');
 // { useNewUrlParser: true, useUnifiedTopology: true });
 
 // Online
-mongoose.connect( process.env.connection, { useNewUrlParser: true, useUnifiedTopology: true });
+mongoose.connect(process.env.connection, { useNewUrlParser: true, useUnifiedTopology: true });
 
 
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -127,7 +127,7 @@ app.get('/movies/directors/:Name', passport.authenticate('jwt', { session: false
 
 
  //Get list of all user
-app.get('/users', passport.authenticate('jwt', { session: false }), (req, res) =>{
+app.get('/users', passport.authenticate('local', { session: false }), (req, res) =>{
     User.find()
     .then((users)=>{
         res.status(201).json(users);
@@ -289,5 +289,5 @@ app.use((err, req, res, next) => {
 
 const port = process.env.PORT || 8080;
 app.listen(port, '0.0.0.0', () => {
- console.log('Listening on Port ' + port);
+ console.log('Listening on Port' + port);
 });
