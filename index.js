@@ -32,7 +32,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 // Only allows selected domains to access the information 
 const cors = require('cors');
-let allowedOrigins = ['http://localhost:8080', 'http://testsite.com', 'https://localhost:1234'];
+let allowedOrigins = ['https://localhost:1234'];
 
 app.use(cors({
   origin: (origin, callback) => {
