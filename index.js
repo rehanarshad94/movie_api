@@ -75,7 +75,7 @@ app.get('/', (req, res) => {
 
 
 // Get list of all movies in JSON format 
-app.get('/movies', passport.authenticate('jwt', { session: false }), (req, res) => {
+app.get('/movies', (req, res) => {
     Movie.find()
     .then((movie) =>{
         res.status(201).json(movie);
