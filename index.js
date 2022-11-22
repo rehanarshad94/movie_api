@@ -15,11 +15,11 @@ const { check, validationResult } = require('express-validator');
 
 
 // Local
-mongoose.connect('mongodb://localhost:27017/movies',
-{ useNewUrlParser: true, useUnifiedTopology: true });
+// mongoose.connect('mongodb://localhost:27017/movies',
+// { useNewUrlParser: true, useUnifiedTopology: true });
 
 // Online
-// mongoose.connect(process.env.connection, { useNewUrlParser: true, useUnifiedTopology: true });
+mongoose.connect(process.env.connection, { useNewUrlParser: true, useUnifiedTopology: true });
 
 
 app.use(bodyParser.urlencoded({ extended: true }));
