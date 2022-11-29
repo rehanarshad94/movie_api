@@ -226,7 +226,7 @@ app.put('/users/:Username', passport.authenticate('jwt', { session: false }), (r
 // Create favorits list of movies for users
 app.post('/users/:Username/movies/:MovieID', passport.authenticate('jwt', { session: false }), (req, res) => {
     User.findOneAndUpdate({ Username: req.params.Username }, {
-       $push: { FavoriteMovies: req.params.MovieID }
+       $push: { FavoriteMovies: req.params.MovieID.toString() }
      },
      { new: true }, // This line makes sure that the updated document is returned
     (err, updatedUser) => {
