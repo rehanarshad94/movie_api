@@ -15,11 +15,11 @@ const { check, validationResult } = require('express-validator');
 
 
 // Local
-mongoose.connect('mongodb://localhost:27017/movies',
-{ useNewUrlParser: true, useUnifiedTopology: true });
+// mongoose.connect('mongodb://localhost:27017/movies',
+// { useNewUrlParser: true, useUnifiedTopology: true });
 
 // Online
-// mongoose.connect(process.env.connection, { useNewUrlParser: true, useUnifiedTopology: true });
+mongoose.connect(process.env.connection, { useNewUrlParser: true, useUnifiedTopology: true });
 
 
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -283,12 +283,12 @@ app.use((err, req, res, next) => {
 
 
 
-app.listen(4200, () => {
-  console.log('Server is running on Port 4200');
-})
+// app.listen(8080, () => {
+//   console.log('Server is running on Port 8080');
+// })
 
 
-// const port = process.env.PORT || 8080;
-// app.listen(port, '0.0.0.0', () => {
-//  console.log('Listening on Port' + port);
-// });
+const port = process.env.PORT || 8080;
+app.listen(port, '0.0.0.0', () => {
+ console.log('Listening on Port' + port);
+});
